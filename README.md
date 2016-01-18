@@ -1,1 +1,1 @@
-# corsair-numlock-status
+# corsair num lock status
