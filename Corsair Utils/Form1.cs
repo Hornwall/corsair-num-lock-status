@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using CUE.NET.Devices.Keyboard;
 using CUE.NET;
 using CUE.NET.Devices.Keyboard.Keys;
 using CUE.NET.Devices.Keyboard.Enums;
 using CUE.NET.Brushes;
-using System.Threading;
-using CUE.NET.Devices.Keyboard.Extensions;
-using System.Configuration;
 
 namespace Corsair_Utils
 {
@@ -25,10 +16,13 @@ namespace Corsair_Utils
 
         private bool numLockState = Control.IsKeyLocked(Keys.NumLock);
         private Color selectedColor;
+        private bool shouldExit = false;
 
         public Form1()
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Minimized;
+            this.ShowInTaskbar = false;
 
             selectedColor = (Color)Properties.Settings.Default["KeyPadColor"];
 
@@ -89,6 +83,38 @@ namespace Corsair_Utils
                 Properties.Settings.Default.Save();
                 refreshNumpad();
             }
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (FormWindowState.Minimized == this.WindowState)
+            {
+                this.Hide();
+            }
+        }
+
+        private void trayIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.Show();
+            this.BringToFront();
+            this.WindowState = FormWindowState.Normal;
+            this.MinimumSize = this.Size;
+            this.MaximumSize = this.Size;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!shouldExit)
+            {
+                this.Hide();
+                e.Cancel = true;
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            shouldExit = true;
+            this.Close();
         }
     }
 }
